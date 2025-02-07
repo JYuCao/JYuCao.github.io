@@ -11,3 +11,7 @@ Gemfile.lock
 # Ingore files created by npm
 node_modules
 package-lock.json
+
+# 忽略本身以及一些页面模板
+.gitignore
+templates/
