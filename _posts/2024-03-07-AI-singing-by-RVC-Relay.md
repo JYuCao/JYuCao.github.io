@@ -37,7 +37,7 @@ your_path\miniconda3\Scripts
 ```
 __进入环境变量的方法__：
 在“设置”中搜索`编辑系统环境变量`，点击进入。然后按照下图进行操作：
-![](2024-03-07-AI-singing-by-RVC-Relay/1.png)
+![](/images/2024-03-07-AI-singing-by-RVC-Relay/1.png)
 <br/>
 可参考：[Windows上Miniconda的安装：一步步教你从零开始](https://blog.csdn.net/qq_41813454/article/details/136111020)
 
@@ -57,7 +57,7 @@ conda activate rvc
 看见新命令行前出现`(rvc)`时则操作成功。
 4. 安装 pytorch
 点击进入 [pytorch 官方页面](https://pytorch.org/get-started/locally/)，在如下界面选择对应选项，并复制命令输入 cmd 进行安装。
-![](2024-03-07-AI-singing-by-RVC-Relay/2.png)
+![](/images/2024-03-07-AI-singing-by-RVC-Relay/2.png)
 5. 安装依赖
 ```
 pip install -r requirements.txt
@@ -100,13 +100,13 @@ cd D:\files\study\AI\Retrieval-based-Voice-Conversion-WebUI
 python infer-web.py
 ```
 在 RVC WebUI 启动后，会弹出一个网站页面。到此，RVC 的部署就完成了。
-![](2024-03-07-AI-singing-by-RVC-Relay/3.png)
+![](/images/2024-03-07-AI-singing-by-RVC-Relay/3.png)
 
 ## 3. 使用 RVC 训练自己的模型
 要进行训练，数据集和模型是必不可少的。本仓库的压缩包内已经内置了部分用于处理数据集和用于训练的模型，如需要更多模型，可点击[RVC在 huggingface 的模型仓库](https://huggingface.co/lj1995/VoiceConversionWebUI/tree/main)进行浏览下载。
 ### 3.1 处理声源（数据集）
 点击跳转到如下页面“伴奏人声分离&去混响&去回声”。
-![](2024-03-07-AI-singing-by-RVC-Relay/4.png)
+![](/images/2024-03-07-AI-singing-by-RVC-Relay/4.png)
 准备一定长度的用于训练的音频，官方推荐长度最好在10-50min，如果音频质量好，可以只准备5-10min。
 
 将音频文件夹路径输入到页面中，也可以直接将音频文件拖入。模型先使用HP2跑一遍，再使用DeEcho-Aggressive跑一遍。（这里我对于这些模型的使用还没有研究透彻，这不是最优方案，暂时照这个做就行）
@@ -114,7 +114,7 @@ python infer-web.py
 输出文件夹在没有指定的情况下，会存放在项目根目录的`opt`文件夹下，也可自己指定输出目录。
 ### 3.2 训练
 点击跳转到如下页面“训练”。
-![](2024-03-07-AI-singing-by-RVC-Relay/5.png)
+![](/images/2024-03-07-AI-singing-by-RVC-Relay/5.png)
 实验名自定义，训练文件夹路径选择处理过的声源文件夹，保证文件夹内只有处理过的人声存在。剩下的可以不用更改。
 
 关于训练轮数，在数据集音质较差的情况下，20-30即可。如果数据集音质很好，可以加大训练力度。
@@ -131,9 +131,9 @@ python infer-web.py
 ### 3.2 Replay的使用
 1. 运行软件，若弹窗选择“Not Now”
 2. 将想听的歌曲拖入下面的框中。
-![](2024-03-07-AI-singing-by-RVC-Relay/6.png)
+![](/images/2024-03-07-AI-singing-by-RVC-Relay/6.png)
 3. 将要推理的模型放入下面的框中，模型位于RVC项目的`.\assets\weights`中。
-![](2024-03-07-AI-singing-by-RVC-Relay/7.png)
+![](/images/2024-03-07-AI-singing-by-RVC-Relay/7.png)
 4. 点击最下方的按钮生成
 
 然后就能听到AI歌曲了。<br/>
