@@ -1,6 +1,6 @@
 ---
 permalink: /
-title: "About me"
+title: "关于我"
 except: "About me"
 author_profile: true
 redirect_from: 
@@ -34,5 +34,3 @@ redirect_from:
 
 ## 联系方式
 QQ：1019865095<br>
-B站：[GrandpaGhost](https://space.bilibili.com/39267048)（主要用于上传游戏视频）<br>
-GitHub：[https://github.com/JYuCao](https://github.com/JYuCao)
