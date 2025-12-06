@@ -25,12 +25,12 @@ Clash 是一个开源的跨平台代理工具，支持多种协议和规则，�
 ### **机场**
 机场是指提供VPN或代理服务的服务提供商提供的一组配置节点，可以看作是 _外壳内部的核心_。用户通过购买机场的服务，可以获得访问墙外资源的能力。机场通常会提供多个服务器节点，用户可以根据自己的需求选择合适的节点进行连接。
 
-![概述模型](image/2025-12-6-How2UseMagic/1.png)
+![概述模型](images/2025-12-6-How2UseMagic/1.png)
 
 ## **配置步骤**
 ### **下载并安装 Clash for Android**
 
-![Android Clash 客户端](image/2025-12-6-How2UseMagic/7.png)
+![Android Clash 客户端](images/2025-12-6-How2UseMagic/7.png)
 
 1. 点击[此处](clashxhub.com)(clashxhub.com)访问Clash官网。
 
@@ -39,35 +39,35 @@ Clash 是一个开源的跨平台代理工具，支持多种协议和规则，�
 ### **获取机场配置**
 本文采用的机场服务提供商为miru，因为大部分机场网站本身就需要翻墙访问，所以本教程为了普适性，假设用户无法直接访问机场网站。所以需要首先通过其他方式获得一个临时的VPN连接，之后再通过该连接访问机场网站获取配置。
 
-![迷雾通下载页面](image/2025-12-6-How2UseMagic/8.png)
+![迷雾通下载页面](images/2025-12-6-How2UseMagic/8.png)
 
 迷雾通是一个免费的VPN工具，可以帮助用户临时翻墙访问被墙的网站。但需注意，迷雾通的稳定性和速度可能不如付费的VPN服务，所以仅建议用于临时访问。
 
 因迷雾通官网会进行人机验证，该验证也需要翻墙，所以文章引用了一个非官方的迷雾通下载地址：[点击这里跳转](https://www.ivu4e.cn/toolbox/newwork/2023-04-13/1842.html)(https://www.ivu4e.cn/toolbox/newwork/2023-04-13/1842.html)。
 
-![迷雾通主页](image/2025-12-6-How2UseMagic/9.png)
+![迷雾通主页](images/2025-12-6-How2UseMagic/9.png)
 
 下载并安装迷雾通后，打开应用，直接进行自动连接。
 
 连接成功（红色标识变绿）后，打开浏览器，访问miru官网：[点击这里跳转](miru.cloud)(miru.cloud)。
 
-![套餐](image/2025-12-6-How2UseMagic/6.png)
+![套餐](images/2025-12-6-How2UseMagic/6.png)
 
 注册可以使用qq邮箱，有朋友使用了没有任何问题。注册并登录后，进入用户面板，点击“会员商店”进行购买。
 
-![订阅信息](image/2025-12-6-How2UseMagic/5.png)
+![订阅信息](images/2025-12-6-How2UseMagic/5.png)
 
 本时期，miru最基本的一月套餐价格为10元人民币，购买后返回主页“用户中心”，向下翻到“订阅信息”小节，点击“Clash”订阅，“复制Clash订阅”。
 
 ### **配置Clash for Android**
 
-![Clash配置页面](image/2025-12-6-How2UseMagic/4.png)
+![Clash配置页面](images/2025-12-6-How2UseMagic/4.png)
 
 1. 打开Clash for Android应用，进入“配置”页面，点击右上角的“+”按钮，选择“从URL导入”，名称改为“miru”，URL粘贴刚才复制的订阅地址，点击右上角保存完成导入。简单说明一下，从URL导入的过程也需要翻墙，因为订阅地址本身是墙外的资源，所以需要确保迷雾通仍然处于连接状态。
 
 2. 导入完成后，在“配置”页面选择刚才导入的“miru”配置，等待应用加载完成。
 
-![Clash主页](image/2025-12-6-How2UseMagic/3.png)
+![Clash主页](images/2025-12-6-How2UseMagic/3.png)
 
 3. 返回首页，点击“启动”按钮，启动Clash服务。
 
