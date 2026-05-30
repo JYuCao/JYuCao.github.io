@@ -22,23 +22,23 @@ tags:
 
 第一步，我们需要创建一个可启动的USB驱动器来安装Windows系统。本质上，这个USB驱动器就像一个安装盘，可以引导电脑进入安装界面，最终将操作系统写入硬盘。
 
-![download page](../images/2026-5-30-ReloadOS/0.png)
+![download page](/images/2026-5-30-ReloadOS/0.png)
 
 创建安装介质的过程并不复杂。首先去微软官方网站下载存储介质创建工具（Media Creation Tool），点击[此处](https://www.microsoft.com/zh-cn/software-download/windows11)进入下载页面，然后选择下图的选项。
 
-![MCT Download](../images/2026-5-30-ReloadOS/1.png)
+![MCT Download](/images/2026-5-30-ReloadOS/1.png)
 
 下载完成后，**插入 USB 驱动器**并运行该工具。
 
-![waiting](../images/2026-5-30-ReloadOS/3.png)
+![waiting](/images/2026-5-30-ReloadOS/3.png)
 
 等待一段时间后，按照提示选择语言、版本和体系结构（32位或64位），可以直接使用推荐。
 
-![Selection](../images/2026-5-30-ReloadOS/4.png)
+![Selection](/images/2026-5-30-ReloadOS/4.png)
 
 然后选择“为另一台电脑创建安装介质”。
 
-![Select USB](../images/2026-5-30-ReloadOS/2.png)
+![Select USB](/images/2026-5-30-ReloadOS/2.png)
 
 接下来，选择“U盘”作为安装介质，并选择你插入的USB驱动器。工具会自动下载所需的文件并将其写入USB驱动器，完成后你就有了一个可启动的安装介质。
 
@@ -73,27 +73,27 @@ tags:
 
 成功从U盘启动后，你会看到如下界面：
 
-![install](../images/2026-5-30-ReloadOS/5.png)
+![install](/images/2026-5-30-ReloadOS/5.png)
 
 点击下一步，选择现在安装。
 
-![install](../images/2026-5-30-ReloadOS/6.png)
+![install](/images/2026-5-30-ReloadOS/6.png)
 
 等待安装程序启动，然后看到这个界面，先选择没有密钥，因为之后会使用 Office Tool Plus 进行激活。
 
-![install](../images/2026-5-30-ReloadOS/7.png)
+![install](/images/2026-5-30-ReloadOS/7.png)
 
 选择你要的安装类型，点击下一页。
 
-![install](../images/2026-5-30-ReloadOS/8.png)
+![install](/images/2026-5-30-ReloadOS/8.png)
 
 后续勾选接受软件许可证条款，点击下一页。然后在这个页面点击自定义安装。
 
-![install](../images/2026-5-30-ReloadOS/9.png)
+![install](/images/2026-5-30-ReloadOS/9.png)
 
 这里分两种情况进行操作，如果只是想在C盘重装系统，直接选中C盘选择删除即可。然后选择新出现的未分配空间点击下一页即可。下图中前四个是 C 盘所在的分区，删除后它们会合成一个大的未分配空间。
 
-![install](../images/2026-5-30-ReloadOS/10.png)
+![install](/images/2026-5-30-ReloadOS/10.png)
 
 还有种情况是，你电脑里所有文件都不需要了，那么你可以删除所有能删除的分区，不能删除的分区删除按钮会显示灰色。
 
@@ -129,7 +129,7 @@ tags:
 
 这里推荐使用 [Office Tool Plus（点击此处前往下载页面）](https://www.officetool.plus/zh-cn/introduction/download.html)进行安装和激活。建议在下载页面选择使用于 Windows x86 平台的版本进行下载。
 
-![OTP](../images/2026-5-30-ReloadOS/11.png)
+![OTP](/images/2026-5-30-ReloadOS/11.png)
 
 Office Tool Plus 的使用方式可以参考[此处](https://zhuanlan.zhihu.com/p/671033717)。
 
