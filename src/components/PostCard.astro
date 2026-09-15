@@ -1,0 +1,25 @@
+---
+import type { BlogPost } from '../lib/blog';
+import { formatDate, getPostUrl, getSummary, readingMinutes } from '../lib/blog';
+
+interface Props {
+  post: BlogPost;
+}
+
+const { post } = Astro.props;
+---
+
+<article class="post-card">
+  <p class="post-meta">
+    <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
+    <span aria-hidden="true">·</span>
+    <span>{readingMinutes(post.body)} 分钟阅读</span>
+  </p>
+  <h2><a href={getPostUrl(post)}>{post.data.title}</a></h2>
+  <p>{getSummary(post)}</p>
+  {post.data.tags.length > 0 && (
+    <ul class="tag-list" aria-label="文章标签">
+      {post.data.tags.map((tag) => <li>{tag}</li>)}
+    </ul>
+  )}
+</article>

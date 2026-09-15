@@ -1,17 +1,8 @@
-# Ignore the contents of the _site directory and other cache directories
-_site/
-.sass-cache/
-
-# Ignore the directory for local files during development
-local/
-
-# Ignore the Gemfile that is generated
-Gemfile.lock
-
-# Ingore files created by npm
-node_modules
-package-lock.json
-
-# 忽略本身以及一些页面模板
-.gitignore
-templates/
+node_modules/
+dist/
+.astro/
+.DS_Store
+*.log
+.env
+.env.*
+!.env.example

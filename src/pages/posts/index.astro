@@ -1,0 +1,21 @@
+---
+import { getCollection } from 'astro:content';
+import PostCard from '../../components/PostCard.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { sortPosts } from '../../lib/blog';
+
+const posts = sortPosts(await getCollection('blog', ({ data }) => !data.draft));
+---
+
+<BaseLayout title="文章" description="曹家宇的技术文章归档。">
+  <main class="page-shell single-column">
+    <header class="page-intro">
+      <p class="eyebrow">WRITING</p>
+      <h1>文章</h1>
+      <p>记录软件开发、人工智能和计算机使用中的实践经验。</p>
+    </header>
+    <div class="post-list">
+      {posts.map((post) => <PostCard post={post} />)}
+    </div>
+  </main>
+</BaseLayout>
