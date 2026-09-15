@@ -1,12 +1,34 @@
-<aside class="author-card" aria-label="个人资料">
-  <img src="/images/profile.jpg" width="144" height="144" alt="曹家宇的头像" />
+---
+interface AuthorLink {
+  label: string;
+  href: string;
+  rel?: string;
+}
+
+interface Props {
+  profile: {
+    name: string;
+    bio: string;
+    avatar: string;
+    avatarAlt: string;
+    location?: string;
+    links: AuthorLink[];
+  };
+}
+
+const { profile } = Astro.props;
+---
+
+<aside class="author-card" aria-label={`${profile.name}的个人资料`}>
+  <img src={profile.avatar} width="144" height="144" alt={profile.avatarAlt} />
   <div>
-    <p class="author-name">曹家宇</p>
-    <p class="author-bio">电子科技大学计算机科学与技术硕士生</p>
+    <p class="author-name">{profile.name}</p>
+    <p class="author-bio">{profile.bio}</p>
     <ul class="author-links">
-      <li>中国 · 成都</li>
-      <li><a href="mailto:jycao233@163.com">jycao233@163.com</a></li>
-      <li><a href="https://github.com/JYuCao" rel="me">GitHub</a></li>
+      {profile.location && <li>{profile.location}</li>}
+      {profile.links.map((link) => (
+        <li><a href={link.href} rel={link.rel}>{link.label}</a></li>
+      ))}
     </ul>
   </div>
 </aside>

@@ -14,4 +14,30 @@ const blog = defineCollection({
   }),
 });
 
-export const collections = { blog };
+const pages = defineCollection({
+  loader: glob({ base: './src/content/pages', pattern: '**/*.{md,mdx}' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    eyebrow: z.string().optional(),
+    draft: z.boolean().default(false),
+    navigation: z.object({
+      label: z.string(),
+      order: z.number().default(100),
+    }).optional(),
+    author: z.object({
+      name: z.string(),
+      bio: z.string(),
+      avatar: z.string(),
+      avatarAlt: z.string(),
+      location: z.string().optional(),
+      links: z.array(z.object({
+        label: z.string(),
+        href: z.string(),
+        rel: z.string().optional(),
+      })).default([]),
+    }).optional(),
+  }),
+});
+
+export const collections = { blog, pages };

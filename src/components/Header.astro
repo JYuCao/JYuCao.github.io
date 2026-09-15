@@ -1,14 +1,29 @@
 ---
+import { getCollection } from 'astro:content';
+import { SECTION_NAVIGATION, SITE } from '../config/site';
+import { getPageUrl } from '../lib/pages';
+
 const path = Astro.url.pathname;
+const contentNavigation = (await getCollection('pages', ({ data }) => !data.draft && Boolean(data.navigation)))
+  .map((page) => ({
+    label: page.data.navigation!.label,
+    href: getPageUrl(page),
+    order: page.data.navigation!.order,
+  }));
+const navigation = [...contentNavigation, ...SECTION_NAVIGATION].sort((a, b) => a.order - b.order);
+
+function isCurrent(href: string) {
+  return href === '/' ? path === '/' : path.startsWith(href);
+}
 ---
 
 <header class="site-header">
   <div class="header-inner">
-    <a class="site-title" href="/" aria-label="JYCao 的主页">JYCao</a>
+    <a class="site-title" href="/" aria-label={`${SITE.name} 的主页`}>{SITE.name}</a>
     <nav aria-label="主导航">
-      <a href="/" aria-current={path === '/' ? 'page' : undefined}>关于</a>
-      <a href="/posts/" aria-current={path.startsWith('/posts/') ? 'page' : undefined}>文章</a>
-      <a href="/tags/" aria-current={path.startsWith('/tags/') ? 'page' : undefined}>标签</a>
+      {navigation.map((item) => (
+        <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>{item.label}</a>
+      ))}
     </nav>
   </div>
 </header>

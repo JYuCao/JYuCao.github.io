@@ -1,0 +1,29 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AuthorCard from './AuthorCard.astro';
+
+interface Props {
+  page: CollectionEntry<'pages'>;
+  isHome?: boolean;
+}
+
+const { page, isHome = false } = Astro.props;
+const { Content } = await render(page);
+const { author, description, eyebrow, title } = page.data;
+---
+
+<BaseLayout title={isHome ? undefined : title} description={description}>
+  <main class:list={['page-shell', author ? 'content-with-aside' : 'single-column']}>
+    {author && <AuthorCard profile={author} />}
+
+    <article class="prose content-main">
+      <header class="page-intro">
+        {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+        <h1>{title}</h1>
+        <p>{description}</p>
+      </header>
+      <Content />
+    </article>
+  </main>
+</BaseLayout>
