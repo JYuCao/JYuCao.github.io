@@ -1,6 +1,6 @@
 ---
 title: 个人简介
-description: 电子科技大学计算机科学与技术硕士研究生，关注具身智能、视觉/雷达导航与在线适应，具备机器人系统集成和软硬件协同工程经验。
+description: 电子科技大学计算机科学与技术硕士研究生，关注具身智能、机器人感知与导航、在线适应，具备机器人系统集成和软硬件协同工程经验。
 eyebrow: ABOUT
 navigation:
   label: 关于
@@ -39,17 +39,22 @@ author:
 - 完成相机、机器人与地图坐标系转换，以及高度、姿态、偏航角和异常数据处理；对 30/60 FPS 双目与 IMU 配置进行真实机器人测试和调优。
 - 解决 Jetson USB OTG、DDS 跨网卡通信及 PVA/GPU 硬件加速相关问题，在真实环境中完成走廊绕行返回和短距离自主导航演示；同时搭建基于 MkDocs 与 GitLab CI/CD 的实验室技术文档站，沉淀部署、调试和交付文档。
 
+### DNTR 小目标检测框架复现（2026.03）
+
+- 基于 MMDetection 复现 DNTR，完成 AITOD 数据集上的模型配置、小规模训练与推理验证。
+- 分析 DN-FPN、Trans R-CNN 等关键模块及其在密集小目标检测中的作用。
+
 ### 神经网络模型量化与部署（2022.12–2023.07）
 
 - 使用 PPQ 对 ResNet、YOLO 等模型进行低比特量化。
 - 使用 ONNX Runtime 部署量化模型，记录和分析不同策略下的精度与性能。
 
-### DNTR 小目标检测框架复现（2026.03）
-
-- 基于 MMDetection 复现 DNTR，完成小规模训练与推理验证。
-- 研究 Transformer 自注意力机制在 R-CNN 小目标检测中的作用。
-
 ## 其他项目经历
+
+### FPGA 存储板软件开发（2024.12–2025.04）
+
+- 实现对 16 片 NOR Flash 阵列、EEPROM、CAN 总线与 UART 接口的统一控制，完成数据采集、命令处理、存储和磨损均衡。
+- 使用 Verilog 编写控制逻辑并完成软件仿真，完成 60 余页技术报告。
 
 ### 非接触式红外温度测量模块（2023.09–2024.12）
 
@@ -57,21 +62,16 @@ author:
 - 使用 STM32F103C8T6 处理 ADC 数据，通过 SPI 驱动 OLED，并使用 UART 和定时器中断实现上位机通信。
 - 使用 Qt/C++ 开发上位机，实时显示温度曲线并支持数据点标注与标签。
 
-### Python 微服务设计与 DevOps 实践（2024.3–2024.6）
+### Python 微服务设计与 DevOps 实践（2024.03–2024.06）
 
 - 团队完成共享单车与校园门禁系统的后端和管理员前端，课程项目成绩 93 分。
 - 后端使用 Python Sanic 和 MySQL，服务间通过 HTTP API 通信。
 - 前端使用 HTML、CSS、JavaScript 和 jQuery，系统通过 Docker 部署至云服务器。
 
-### FPGA 存储板软件开发（2024.12–2025.04）
-
-- 实现对 16 片 NOR Flash 阵列、EEPROM、CAN 总线与 UART 接口的统一控制，完成数据采集、命令处理、存储和磨损均衡。
-- 使用 Verilog 编写控制逻辑并完成软件仿真，完成 60 余页技术报告。
-
 ## 专业技能
 
 - **机器人系统：** ROS 2 Humble、Unitree Go2、Jetson Orin、RealSense D435i、LiDAR、NVIDIA cuVSLAM、DDS
-- **人工智能：** PyTorch、PPQ、ONNX Runtime、Transformer、模型量化与推理部署
+- **人工智能：** PyTorch、MMDetection、PPQ、ONNX Runtime、模型量化与推理部署
 - **嵌入式与 FPGA：** STM32、ADC、SPI、UART、CAN、PCB、Qt/C++、Verilog
 - **开发语言：** Python、C/C++、Verilog、JavaScript
 - **工程工具：** Linux、Git、Docker、MkDocs、GitLab CI/CD、MySQL
