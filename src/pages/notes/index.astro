@@ -1,141 +1,169 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getMathNoteLabel, getMathNoteUrl, sortMathNotes } from '../../lib/math-notes';
+import {
+  getNotesBySubject,
+  getSubjectUrl,
+  NOTE_SUBJECTS,
+  type NoteSubject,
+} from '../../lib/notes';
 
-const notes = sortMathNotes(await getCollection('mathNotes'));
-const chapterCount = notes.filter((note) => /^chapter\d+/i.test(note.id)).length;
+const allNotes = await getCollection('notes');
+const subjects = (Object.keys(NOTE_SUBJECTS) as NoteSubject[]).map((subject) => ({
+  subject,
+  config: NOTE_SUBJECTS[subject],
+  notes: getNotesBySubject(allNotes, subject),
+}));
 ---
 
-<BaseLayout title="数学笔记" description="以交互式思维导图整理的高等数学学习笔记。">
-  <main class="page-shell notes-index">
-    <header class="page-intro notes-intro">
-      <div>
-        <p class="eyebrow">MATH NOTES</p>
-        <h1>数学笔记</h1>
-        <p>把章节、公式与结论放进一张可以缩放和折叠的知识地图里。</p>
-      </div>
-      <p class="notes-count"><strong>{chapterCount}</strong> 章<br /><span>＋ {notes.length - chapterCount} 个专题</span></p>
+<BaseLayout title="笔记" description="曹家宇的交互式学习笔记与知识地图。">
+  <main class="page-shell notes-hub">
+    <header class="page-intro">
+      <p class="eyebrow">KNOWLEDGE MAPS</p>
+      <h1>笔记</h1>
+      <p>用可缩放、可折叠的思维导图整理知识结构，也保留 Markdown 原文以便检索和复习。</p>
     </header>
 
-    <ol class="note-grid">
-      {notes.map((note) => (
-        <li>
-          <a href={getMathNoteUrl(note)}>
-            <span class="note-label">{getMathNoteLabel(note)}</span>
-            <h2>{note.data.title}</h2>
-            <span class="note-open" aria-hidden="true">打开导图 →</span>
+    <div class="subject-grid">
+      {subjects.map(({ subject, config, notes }, index) => (
+        <article class:list={['subject-card', `subject-${subject}`]}>
+          <a href={getSubjectUrl(subject)}>
+            <div class="subject-topline">
+              <span class="subject-number">0{index + 1}</span>
+              <span class="subject-count">{notes.length} 篇</span>
+            </div>
+            <p class="subject-eyebrow">{config.eyebrow}</p>
+            <h2>{config.title}</h2>
+            <p>{config.description}</p>
+            <ul aria-label={`${config.title}内容示例`}>
+              {notes.slice(0, 3).map((note) => <li>{note.data.title}</li>)}
+            </ul>
+            <span class="subject-open" aria-hidden="true">进入专题 →</span>
           </a>
-        </li>
+        </article>
       ))}
-    </ol>
+    </div>
   </main>
 </BaseLayout>
 
 <style>
-  .notes-index {
-    max-width: 1180px;
+  .notes-hub {
+    max-width: 1220px;
   }
 
-  .notes-intro {
-    display: flex;
-    gap: 2rem;
-    align-items: end;
-    justify-content: space-between;
-  }
-
-  .notes-intro > div > p:last-child {
-    max-width: 650px;
-    margin: 0;
-    color: var(--text-soft);
-    font-size: 1.08rem;
-  }
-
-  .notes-count {
-    flex: 0 0 auto;
-    margin: 0 0 0.4rem;
-    color: var(--text-soft);
-    font-size: 0.86rem;
-    line-height: 1.35;
-    text-align: right;
-  }
-
-  .notes-count strong {
-    color: var(--accent);
-    font-size: 2.6rem;
-    line-height: 1;
-  }
-
-  .note-grid {
+  .subject-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
   }
 
-  .note-grid a {
+  .subject-card a {
+    position: relative;
     display: flex;
-    min-height: 180px;
-    padding: 1.5rem;
+    overflow: hidden;
+    min-height: 430px;
+    padding: 1.6rem;
     border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border-radius: 22px;
     flex-direction: column;
     color: var(--text);
-    background: rgb(255 255 255 / 72%);
+    background: rgb(255 255 255 / 76%);
     text-decoration: none;
-    transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+    transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
   }
 
-  .note-grid a:hover {
+  .subject-card a::before {
+    position: absolute;
+    top: -5rem;
+    right: -4rem;
+    width: 12rem;
+    height: 12rem;
+    border-radius: 50%;
+    background: rgb(23 107 135 / 8%);
+    content: '';
+  }
+
+  .subject-card a:hover {
     border-color: rgb(23 107 135 / 38%);
     box-shadow: var(--shadow);
-    transform: translateY(-3px);
+    transform: translateY(-4px);
   }
 
-  .note-label {
-    color: var(--accent);
-    font-size: 0.76rem;
-    font-weight: 800;
-    letter-spacing: 0.12em;
-  }
-
-  .note-grid h2 {
-    margin: 0.7rem 0 1.5rem;
-    font-size: clamp(1.2rem, 3vw, 1.55rem);
-    line-height: 1.35;
-    letter-spacing: -0.02em;
-  }
-
-  .note-open {
-    margin-top: auto;
+  .subject-topline {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 3.2rem;
     color: var(--text-soft);
-    font-size: 0.86rem;
+    font-size: 0.8rem;
+    font-weight: 750;
   }
 
-  @media (max-width: 700px) {
-    .notes-intro {
-      display: block;
-    }
+  .subject-number {
+    color: var(--accent);
+    font-size: 1.15rem;
+    letter-spacing: 0.08em;
+  }
 
-    .notes-count {
-      margin-top: 1.5rem;
-      text-align: left;
-    }
+  .subject-eyebrow {
+    margin: 0;
+    color: var(--accent);
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+  }
 
-    .note-grid {
+  .subject-card h2 {
+    margin: 0.45rem 0 0.7rem;
+    font-size: clamp(1.65rem, 3vw, 2.15rem);
+    line-height: 1.15;
+    letter-spacing: -0.035em;
+  }
+
+  .subject-card h2 + p {
+    margin: 0;
+    color: var(--text-soft);
+    font-size: 0.92rem;
+    line-height: 1.65;
+  }
+
+  .subject-card ul {
+    margin: 1.4rem 0 1.5rem;
+    padding: 1.1rem 0 0 1.1rem;
+    border-top: 1px solid var(--border);
+    color: var(--text-soft);
+    font-size: 0.82rem;
+  }
+
+  .subject-card li + li {
+    margin-top: 0.3rem;
+  }
+
+  .subject-open {
+    margin-top: auto;
+    color: var(--accent-strong);
+    font-size: 0.88rem;
+    font-weight: 750;
+  }
+
+  @media (max-width: 900px) {
+    .subject-grid {
       grid-template-columns: 1fr;
     }
 
-    .note-grid a {
-      min-height: 150px;
+    .subject-card a {
+      min-height: 330px;
+    }
+
+    .subject-topline {
+      margin-bottom: 2rem;
     }
   }
 
   @media (prefers-color-scheme: dark) {
-    .note-grid a {
-      background: rgb(18 26 39 / 80%);
+    .subject-card a {
+      background: rgb(18 26 39 / 82%);
     }
   }
 </style>

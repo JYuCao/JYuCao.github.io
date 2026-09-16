@@ -21,7 +21,7 @@ npm run build
 
 - 主页内容和个人资料：`src/content/pages/home.md`
 - 博客文章：`src/content/blog/`
-- 数学思维导图笔记：`src/content/math-notes/`（新增 Markdown 后会自动生成笔记页）
+- 思维导图笔记：`src/content/notes/`，按 `math`、`cn`、`os` 子目录分类
 - 新增普通页面：在 `src/content/pages/` 添加 Markdown 文件；文件名会成为页面地址
 - 在普通页面 frontmatter 中设置 `navigation` 后，该页面会自动出现在顶部导航
 - 站点名称和固定导航：`src/config/site.ts`
@@ -47,7 +47,7 @@ navigation:
 
 将它保存为 `src/content/pages/projects.md` 后，会自动生成 `/projects/` 页面并加入导航。省略 `navigation` 即可生成不显示在顶部导航中的独立页面。
 
-数学笔记使用 Markmap 渲染。每篇笔记需要在 frontmatter 中填写 `title`，可通过 `markmap` 调整导图选项：
+笔记使用 Markmap 渲染。每篇笔记需要在 frontmatter 中填写 `title`，可通过 `markmap` 调整导图选项：
 
 ```md
 ---
@@ -60,3 +60,5 @@ markmap:
 
 ### 知识点
 ```
+
+分类名称和介绍集中在 `src/lib/notes.ts`。在已有分类目录中新增 Markdown 后，会自动出现在对应的二级页面；新增笔记分类时，再在该配置文件中登记分类即可。

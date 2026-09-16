@@ -40,12 +40,15 @@ const pages = defineCollection({
   }),
 });
 
-const mathNotes = defineCollection({
-  loader: glob({ base: './src/content/math-notes', pattern: '**/*.md' }),
+const notes = defineCollection({
+  loader: glob({ base: './src/content/notes', pattern: '**/*.md' }),
   schema: z.object({
     title: z.string(),
+    route: z.string().optional(),
+    label: z.string().optional(),
+    order: z.number().optional(),
     markmap: z.record(z.string(), z.unknown()).default({}),
   }),
 });
 
-export const collections = { blog, pages, mathNotes };
+export const collections = { blog, pages, notes };

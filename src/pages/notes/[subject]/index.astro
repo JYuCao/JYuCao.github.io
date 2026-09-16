@@ -1,0 +1,169 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import {
+  getNoteLabel,
+  getNotesBySubject,
+  getNoteUrl,
+  NOTE_SUBJECTS,
+  type Note,
+  type NoteSubject,
+} from '../../../lib/notes';
+
+export async function getStaticPaths() {
+  const allNotes = await getCollection('notes');
+  return (Object.keys(NOTE_SUBJECTS) as NoteSubject[]).map((subject) => ({
+    params: { subject },
+    props: {
+      config: NOTE_SUBJECTS[subject],
+      notes: getNotesBySubject(allNotes, subject),
+    },
+  }));
+}
+
+interface Props {
+  config: (typeof NOTE_SUBJECTS)[NoteSubject];
+  notes: Note[];
+}
+
+const { config, notes } = Astro.props;
+---
+
+<BaseLayout title={config.title} description={config.description}>
+  <main class="page-shell notes-index">
+    <a class="back-link" href="/notes/">← 全部笔记</a>
+    <header class="page-intro notes-intro">
+      <div>
+        <p class="eyebrow">{config.eyebrow}</p>
+        <h1>{config.title}</h1>
+        <p>{config.description}选择一篇笔记进入交互式知识地图。</p>
+      </div>
+      <p class="notes-count"><strong>{notes.length}</strong><br /><span>篇笔记</span></p>
+    </header>
+
+    <ol class="note-grid">
+      {notes.map((note) => (
+        <li>
+          <a href={getNoteUrl(note)}>
+            <span class="note-label">{getNoteLabel(note)}</span>
+            <h2>{note.data.title}</h2>
+            <span class="note-open" aria-hidden="true">打开导图 →</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </main>
+</BaseLayout>
+
+<style>
+  .notes-index {
+    max-width: 1180px;
+  }
+
+  .notes-index > .back-link {
+    display: inline-block;
+    margin-bottom: 1.5rem;
+  }
+
+  .notes-intro {
+    display: flex;
+    gap: 2rem;
+    align-items: end;
+    justify-content: space-between;
+  }
+
+  .notes-intro > div > p:last-child {
+    max-width: 650px;
+    margin: 0;
+    color: var(--text-soft);
+    font-size: 1.08rem;
+  }
+
+  .notes-count {
+    flex: 0 0 auto;
+    margin: 0 0 0.4rem;
+    color: var(--text-soft);
+    font-size: 0.86rem;
+    line-height: 1.35;
+    text-align: right;
+  }
+
+  .notes-count strong {
+    color: var(--accent);
+    font-size: 2.6rem;
+    line-height: 1;
+  }
+
+  .note-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .note-grid a {
+    display: flex;
+    min-height: 180px;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    flex-direction: column;
+    color: var(--text);
+    background: rgb(255 255 255 / 72%);
+    text-decoration: none;
+    transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+  }
+
+  .note-grid a:hover {
+    border-color: rgb(23 107 135 / 35%);
+    box-shadow: var(--shadow);
+    transform: translateY(-3px);
+  }
+
+  .note-label {
+    color: var(--accent);
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+  }
+
+  .note-grid h2 {
+    margin: 0.7rem 0 1.5rem;
+    font-size: clamp(1.2rem, 3vw, 1.55rem);
+    line-height: 1.35;
+    letter-spacing: -0.02em;
+  }
+
+  .note-open {
+    margin-top: auto;
+    color: var(--text-soft);
+    font-size: 0.86rem;
+  }
+
+  @media (max-width: 700px) {
+    .notes-intro {
+      display: block;
+    }
+
+    .notes-count {
+      margin-top: 1.5rem;
+      text-align: left;
+    }
+
+    .note-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .note-grid a {
+      min-height: 150px;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .note-grid a {
+      background: rgb(18 26 39 / 80%);
+    }
+  }
+</style>

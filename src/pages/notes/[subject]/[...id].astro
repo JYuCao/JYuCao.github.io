@@ -1,58 +1,70 @@
 ---
-import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import { Transformer } from 'markmap-lib';
-import MarkmapViewer from '../../components/MarkmapViewer.astro';
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import MarkmapViewer from '../../../components/MarkmapViewer.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
 import {
-  getMathNoteLabel,
-  getMathNoteSlug,
-  getMathNoteUrl,
-  sortMathNotes,
-  type MathNote,
-} from '../../lib/math-notes';
+  getNoteLabel,
+  getNotesBySubject,
+  getNoteSlug,
+  getNoteUrl,
+  getSubjectUrl,
+  NOTE_SUBJECTS,
+  type Note,
+  type NoteSubject,
+} from '../../../lib/notes';
 
 export async function getStaticPaths() {
-  const notes = sortMathNotes(await getCollection('mathNotes'));
-  return notes.map((note, index) => ({
-    params: { id: getMathNoteSlug(note) },
-    props: {
-      note,
-      notes,
-      previous: notes[index - 1] ?? null,
-      next: notes[index + 1] ?? null,
-    },
-  }));
+  const allNotes = await getCollection('notes');
+  return (Object.keys(NOTE_SUBJECTS) as NoteSubject[]).flatMap((subject) => {
+    const notes = getNotesBySubject(allNotes, subject);
+    return notes.map((note, index) => ({
+      params: { subject, id: getNoteSlug(note) },
+      props: {
+        subject,
+        note,
+        notes,
+        previous: notes[index - 1] ?? null,
+        next: notes[index + 1] ?? null,
+      },
+    }));
+  });
 }
 
 interface Props {
-  note: CollectionEntry<'mathNotes'>;
-  notes: MathNote[];
-  previous: MathNote | null;
-  next: MathNote | null;
+  subject: NoteSubject;
+  note: Note;
+  notes: Note[];
+  previous: Note | null;
+  next: Note | null;
 }
 
-const { note, notes, previous, next } = Astro.props;
+const { subject, note, notes, previous, next } = Astro.props;
+const config = NOTE_SUBJECTS[subject];
 const { Content } = await render(note);
 const bodyWithoutFirstHeading = (note.body ?? '').replace(/^\s*#\s+[^\r\n]+\r?\n+/, '');
 const markmapSource = `# ${note.data.title}\n\n${bodyWithoutFirstHeading}`;
-const transformer = new Transformer();
-const transformed = transformer.transform(markmapSource);
+const transformed = new Transformer().transform(markmapSource);
 ---
 
-<BaseLayout title={note.data.title} description={`${note.data.title}：交互式数学思维导图与 Markdown 笔记。`}>
+<BaseLayout title={note.data.title} description={`${note.data.title}：${config.detailDescription}`}>
   <main class="note-page">
     <header class="note-header">
       <div class="note-heading">
-        <a class="back-link" href="/notes/">← 数学笔记</a>
-        <p class="eyebrow">{getMathNoteLabel(note)}</p>
+        <nav class="note-breadcrumb" aria-label="面包屑导航">
+          <a href="/notes/">笔记</a>
+          <span aria-hidden="true">/</span>
+          <a href={getSubjectUrl(subject)}>{config.shortTitle}</a>
+        </nav>
+        <p class="eyebrow">{getNoteLabel(note)}</p>
         <h1>{note.data.title}</h1>
       </div>
       <label class="note-picker">
         <span>切换章节</span>
         <select data-note-select>
           {notes.map((item) => (
-            <option value={getMathNoteUrl(item)} selected={item.id === note.id}>
-              {getMathNoteLabel(item)} · {item.data.title}
+            <option value={getNoteUrl(item)} selected={item.id === note.id}>
+              {getNoteLabel(item)} · {item.data.title}
             </option>
           ))}
         </select>
@@ -63,13 +75,13 @@ const transformed = transformer.transform(markmapSource);
 
     <nav class="note-pagination" aria-label="章节导航">
       {previous ? (
-        <a href={getMathNoteUrl(previous)} rel="prev">
+        <a href={getNoteUrl(previous)} rel="prev">
           <span>← 上一篇</span>
           <strong>{previous.data.title}</strong>
         </a>
       ) : <span></span>}
       {next ? (
-        <a href={getMathNoteUrl(next)} rel="next">
+        <a href={getNoteUrl(next)} rel="next">
           <span>下一篇 →</span>
           <strong>{next.data.title}</strong>
         </a>
@@ -107,9 +119,22 @@ const transformed = transformer.transform(markmapSource);
     margin-bottom: 1.5rem;
   }
 
-  .note-heading .back-link {
-    display: inline-block;
+  .note-breadcrumb {
+    display: flex;
+    gap: 0.45rem;
+    align-items: center;
     margin-bottom: 1.2rem;
+    color: var(--text-soft);
+    font-size: 0.88rem;
+  }
+
+  .note-breadcrumb a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .note-breadcrumb a:hover {
+    color: var(--accent-strong);
   }
 
   .note-heading .eyebrow {
