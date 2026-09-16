@@ -40,4 +40,12 @@ const pages = defineCollection({
   }),
 });
 
-export const collections = { blog, pages };
+const mathNotes = defineCollection({
+  loader: glob({ base: './src/content/math-notes', pattern: '**/*.md' }),
+  schema: z.object({
+    title: z.string(),
+    markmap: z.record(z.string(), z.unknown()).default({}),
+  }),
+});
+
+export const collections = { blog, pages, mathNotes };

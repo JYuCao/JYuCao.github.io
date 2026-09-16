@@ -1,0 +1,141 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getMathNoteLabel, getMathNoteUrl, sortMathNotes } from '../../lib/math-notes';
+
+const notes = sortMathNotes(await getCollection('mathNotes'));
+const chapterCount = notes.filter((note) => /^chapter\d+/i.test(note.id)).length;
+---
+
+<BaseLayout title="数学笔记" description="以交互式思维导图整理的高等数学学习笔记。">
+  <main class="page-shell notes-index">
+    <header class="page-intro notes-intro">
+      <div>
+        <p class="eyebrow">MATH NOTES</p>
+        <h1>数学笔记</h1>
+        <p>把章节、公式与结论放进一张可以缩放和折叠的知识地图里。</p>
+      </div>
+      <p class="notes-count"><strong>{chapterCount}</strong> 章<br /><span>＋ {notes.length - chapterCount} 个专题</span></p>
+    </header>
+
+    <ol class="note-grid">
+      {notes.map((note) => (
+        <li>
+          <a href={getMathNoteUrl(note)}>
+            <span class="note-label">{getMathNoteLabel(note)}</span>
+            <h2>{note.data.title}</h2>
+            <span class="note-open" aria-hidden="true">打开导图 →</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </main>
+</BaseLayout>
+
+<style>
+  .notes-index {
+    max-width: 1180px;
+  }
+
+  .notes-intro {
+    display: flex;
+    gap: 2rem;
+    align-items: end;
+    justify-content: space-between;
+  }
+
+  .notes-intro > div > p:last-child {
+    max-width: 650px;
+    margin: 0;
+    color: var(--text-soft);
+    font-size: 1.08rem;
+  }
+
+  .notes-count {
+    flex: 0 0 auto;
+    margin: 0 0 0.4rem;
+    color: var(--text-soft);
+    font-size: 0.86rem;
+    line-height: 1.35;
+    text-align: right;
+  }
+
+  .notes-count strong {
+    color: var(--accent);
+    font-size: 2.6rem;
+    line-height: 1;
+  }
+
+  .note-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .note-grid a {
+    display: flex;
+    min-height: 180px;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    flex-direction: column;
+    color: var(--text);
+    background: rgb(255 255 255 / 72%);
+    text-decoration: none;
+    transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+  }
+
+  .note-grid a:hover {
+    border-color: rgb(23 107 135 / 38%);
+    box-shadow: var(--shadow);
+    transform: translateY(-3px);
+  }
+
+  .note-label {
+    color: var(--accent);
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+  }
+
+  .note-grid h2 {
+    margin: 0.7rem 0 1.5rem;
+    font-size: clamp(1.2rem, 3vw, 1.55rem);
+    line-height: 1.35;
+    letter-spacing: -0.02em;
+  }
+
+  .note-open {
+    margin-top: auto;
+    color: var(--text-soft);
+    font-size: 0.86rem;
+  }
+
+  @media (max-width: 700px) {
+    .notes-intro {
+      display: block;
+    }
+
+    .notes-count {
+      margin-top: 1.5rem;
+      text-align: left;
+    }
+
+    .note-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .note-grid a {
+      min-height: 150px;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .note-grid a {
+      background: rgb(18 26 39 / 80%);
+    }
+  }
+</style>

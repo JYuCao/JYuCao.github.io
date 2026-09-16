@@ -1,0 +1,196 @@
+---
+import type { ITransformResult } from 'markmap-lib';
+import type { IMarkmapJSONOptions } from 'markmap-view';
+import 'katex/dist/katex.min.css';
+
+interface Props {
+  root: ITransformResult['root'];
+  options?: Partial<IMarkmapJSONOptions>;
+}
+
+const { root, options = {} } = Astro.props;
+const payload = JSON.stringify({ root, options }).replace(/</g, '\\u003c');
+---
+
+<section class="markmap-viewer" data-markmap-viewer aria-label="交互式思维导图">
+  <div class="markmap-toolbar" aria-label="思维导图工具栏">
+    <button type="button" data-action="zoom-out" title="缩小" aria-label="缩小">−</button>
+    <button type="button" data-action="fit">适应画布</button>
+    <button type="button" data-action="zoom-in" title="放大" aria-label="放大">＋</button>
+    <button type="button" data-action="fullscreen">全屏</button>
+  </div>
+  <svg class="markmap-canvas" role="img" aria-label="数学笔记思维导图"></svg>
+  <p class="markmap-help">拖动画布移动，滚轮缩放，点击节点可折叠分支。</p>
+  <noscript>需要启用 JavaScript 才能查看交互式思维导图。下方仍可展开 Markdown 原文。</noscript>
+  <script is:inline type="application/json" class="markmap-payload" set:html={payload}></script>
+</section>
+
+<script>
+  import { Markmap, deriveOptions } from 'markmap-view';
+
+  async function initializeViewer(viewer: HTMLElement) {
+    if (viewer.dataset.ready) return;
+    viewer.dataset.ready = 'true';
+
+    const payloadNode = viewer.querySelector<HTMLScriptElement>('.markmap-payload');
+    const svg = viewer.querySelector<SVGSVGElement>('.markmap-canvas');
+    if (!payloadNode || !svg) return;
+
+    const payload = JSON.parse(payloadNode.textContent || '{}');
+    await document.fonts?.ready;
+
+    const options = deriveOptions({
+      duration: 280,
+      fitRatio: 0.92,
+      initialExpandLevel: 3,
+      maxInitialScale: 1.25,
+      paddingX: 12,
+      ...payload.options,
+    });
+    const instance = Markmap.create(svg, options, payload.root);
+    await instance.fit();
+
+    viewer.querySelector('[data-action="fit"]')?.addEventListener('click', () => instance.fit());
+    viewer.querySelector('[data-action="zoom-in"]')?.addEventListener('click', () => instance.rescale(1.2));
+    viewer.querySelector('[data-action="zoom-out"]')?.addEventListener('click', () => instance.rescale(0.8));
+    viewer.querySelector('[data-action="fullscreen"]')?.addEventListener('click', async () => {
+      if (document.fullscreenElement === viewer) await document.exitFullscreen();
+      else await viewer.requestFullscreen();
+    });
+
+    let resizeFrame = 0;
+    const observer = new ResizeObserver(() => {
+      window.cancelAnimationFrame(resizeFrame);
+      resizeFrame = window.requestAnimationFrame(() => instance.fit());
+    });
+    observer.observe(viewer);
+    viewer.addEventListener('fullscreenchange', () => window.setTimeout(() => instance.fit(), 80));
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-markmap-viewer]').forEach((viewer) => {
+    initializeViewer(viewer).catch((error) => {
+      console.error('Markmap 初始化失败', error);
+      viewer.dataset.error = 'true';
+    });
+  });
+</script>
+
+<style>
+  .markmap-viewer {
+    position: relative;
+    overflow: hidden;
+    min-height: clamp(520px, 72vh, 860px);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background:
+      radial-gradient(circle at 50% 50%, rgb(23 107 135 / 5%), transparent 55%),
+      var(--surface);
+    box-shadow: var(--shadow);
+  }
+
+  .markmap-viewer:fullscreen {
+    width: 100vw;
+    height: 100vh;
+    min-height: 100vh;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .markmap-canvas {
+    display: block;
+    width: 100%;
+    height: clamp(520px, 72vh, 860px);
+  }
+
+  .markmap-viewer:fullscreen .markmap-canvas {
+    height: 100vh;
+  }
+
+  .markmap-toolbar {
+    position: absolute;
+    z-index: 2;
+    top: 0.85rem;
+    right: 0.85rem;
+    display: flex;
+    gap: 0.35rem;
+    padding: 0.35rem;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: rgb(255 255 255 / 90%);
+    box-shadow: 0 8px 24px rgb(15 23 42 / 10%);
+    backdrop-filter: blur(10px);
+  }
+
+  .markmap-toolbar button {
+    min-width: 2.25rem;
+    height: 2.25rem;
+    padding: 0 0.65rem;
+    border: 0;
+    border-radius: 8px;
+    color: var(--text);
+    background: transparent;
+    font: inherit;
+    font-size: 0.84rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .markmap-toolbar button:hover {
+    color: var(--accent-strong);
+    background: var(--surface-soft);
+  }
+
+  .markmap-help {
+    position: absolute;
+    right: 1rem;
+    bottom: 0.6rem;
+    margin: 0;
+    color: var(--text-soft);
+    font-size: 0.75rem;
+    pointer-events: none;
+  }
+
+  noscript {
+    display: block;
+    padding: 5rem 1.5rem;
+    text-align: center;
+  }
+
+  .markmap-viewer[data-error='true']::after {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    content: '思维导图加载失败，请查看下方 Markdown 原文。';
+    color: var(--text-soft);
+    transform: translate(-50%, -50%);
+  }
+
+  :global(.markmap-foreign) {
+    color: var(--text);
+    font-family: inherit;
+  }
+
+  @media (max-width: 640px) {
+    .markmap-viewer,
+    .markmap-canvas {
+      min-height: 68vh;
+      height: 68vh;
+      border-radius: 14px;
+    }
+
+    .markmap-toolbar {
+      top: 0.55rem;
+      right: 0.55rem;
+    }
+
+    .markmap-help {
+      display: none;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .markmap-toolbar {
+      background: rgb(18 26 39 / 92%);
+      box-shadow: 0 8px 24px rgb(0 0 0 / 28%);
+    }
+  }
+</style>

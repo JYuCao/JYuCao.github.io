@@ -6,5 +6,6 @@ export const SITE = {
 
 export const SECTION_NAVIGATION = [
   { label: '文章', href: '/posts/', order: 20 },
+  { label: '笔记', href: '/notes/', order: 25 },
   { label: '标签', href: '/tags/', order: 30 },
 ] as const;

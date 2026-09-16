@@ -1,0 +1,241 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { Transformer } from 'markmap-lib';
+import MarkmapViewer from '../../components/MarkmapViewer.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import {
+  getMathNoteLabel,
+  getMathNoteSlug,
+  getMathNoteUrl,
+  sortMathNotes,
+  type MathNote,
+} from '../../lib/math-notes';
+
+export async function getStaticPaths() {
+  const notes = sortMathNotes(await getCollection('mathNotes'));
+  return notes.map((note, index) => ({
+    params: { id: getMathNoteSlug(note) },
+    props: {
+      note,
+      notes,
+      previous: notes[index - 1] ?? null,
+      next: notes[index + 1] ?? null,
+    },
+  }));
+}
+
+interface Props {
+  note: CollectionEntry<'mathNotes'>;
+  notes: MathNote[];
+  previous: MathNote | null;
+  next: MathNote | null;
+}
+
+const { note, notes, previous, next } = Astro.props;
+const { Content } = await render(note);
+const bodyWithoutFirstHeading = (note.body ?? '').replace(/^\s*#\s+[^\r\n]+\r?\n+/, '');
+const markmapSource = `# ${note.data.title}\n\n${bodyWithoutFirstHeading}`;
+const transformer = new Transformer();
+const transformed = transformer.transform(markmapSource);
+---
+
+<BaseLayout title={note.data.title} description={`${note.data.title}：交互式数学思维导图与 Markdown 笔记。`}>
+  <main class="note-page">
+    <header class="note-header">
+      <div class="note-heading">
+        <a class="back-link" href="/notes/">← 数学笔记</a>
+        <p class="eyebrow">{getMathNoteLabel(note)}</p>
+        <h1>{note.data.title}</h1>
+      </div>
+      <label class="note-picker">
+        <span>切换章节</span>
+        <select data-note-select>
+          {notes.map((item) => (
+            <option value={getMathNoteUrl(item)} selected={item.id === note.id}>
+              {getMathNoteLabel(item)} · {item.data.title}
+            </option>
+          ))}
+        </select>
+      </label>
+    </header>
+
+    <MarkmapViewer root={transformed.root} options={note.data.markmap} />
+
+    <nav class="note-pagination" aria-label="章节导航">
+      {previous ? (
+        <a href={getMathNoteUrl(previous)} rel="prev">
+          <span>← 上一篇</span>
+          <strong>{previous.data.title}</strong>
+        </a>
+      ) : <span></span>}
+      {next ? (
+        <a href={getMathNoteUrl(next)} rel="next">
+          <span>下一篇 →</span>
+          <strong>{next.data.title}</strong>
+        </a>
+      ) : <span></span>}
+    </nav>
+
+    <details class="note-source">
+      <summary>查看 Markdown 原文</summary>
+      <article class="prose note-source-body">
+        <Content />
+      </article>
+    </details>
+  </main>
+</BaseLayout>
+
+<script>
+  document.querySelector<HTMLSelectElement>('[data-note-select]')?.addEventListener('change', (event) => {
+    window.location.href = (event.currentTarget as HTMLSelectElement).value;
+  });
+</script>
+
+<style>
+  .note-page {
+    width: min(calc(100% - 2rem), 1480px);
+    min-height: calc(100vh - 190px);
+    margin: 0 auto;
+    padding: 2.5rem 0 6rem;
+  }
+
+  .note-header {
+    display: flex;
+    gap: 2rem;
+    align-items: end;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+
+  .note-heading .back-link {
+    display: inline-block;
+    margin-bottom: 1.2rem;
+  }
+
+  .note-heading .eyebrow {
+    margin-bottom: 0.25rem;
+  }
+
+  .note-heading h1 {
+    margin: 0;
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    line-height: 1.14;
+    letter-spacing: -0.04em;
+  }
+
+  .note-picker {
+    display: grid;
+    flex: 0 1 370px;
+    gap: 0.35rem;
+    color: var(--text-soft);
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+
+  .note-picker select {
+    width: 100%;
+    padding: 0.7rem 2.5rem 0.7rem 0.85rem;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    background: var(--surface);
+    font: inherit;
+    font-size: 0.9rem;
+  }
+
+  .note-pagination {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin: 1.25rem 0 2rem;
+  }
+
+  .note-pagination a {
+    display: grid;
+    gap: 0.2rem;
+    padding: 1rem 1.15rem;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text);
+    background: rgb(255 255 255 / 60%);
+    text-decoration: none;
+  }
+
+  .note-pagination a:last-child {
+    text-align: right;
+  }
+
+  .note-pagination a:hover {
+    border-color: rgb(23 107 135 / 38%);
+  }
+
+  .note-pagination span {
+    color: var(--text-soft);
+    font-size: 0.76rem;
+  }
+
+  .note-pagination strong {
+    font-size: 0.92rem;
+  }
+
+  .note-source {
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: rgb(255 255 255 / 55%);
+  }
+
+  .note-source summary {
+    padding: 1rem 1.25rem;
+    color: var(--text-soft);
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .note-source-body {
+    max-width: var(--reading-width);
+    margin: 0 auto;
+    padding: 1rem 1.5rem 3rem;
+  }
+
+  .note-source-body :global(.katex-display) {
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  @media (max-width: 760px) {
+    .note-page {
+      width: min(calc(100% - 1.25rem), 1480px);
+      padding-top: 2rem;
+    }
+
+    .note-header {
+      display: grid;
+      gap: 1.25rem;
+    }
+
+    .note-picker {
+      width: 100%;
+    }
+
+    .note-pagination {
+      grid-template-columns: 1fr;
+    }
+
+    .note-pagination > span:empty {
+      display: none;
+    }
+
+    .note-pagination a:last-child {
+      text-align: left;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .note-pagination a,
+    .note-source {
+      background: rgb(18 26 39 / 70%);
+    }
+  }
+</style>
